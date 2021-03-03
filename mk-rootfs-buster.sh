@@ -50,19 +50,19 @@ sudo cp -rf packages/wayland-protocols/* ${TARGET_ROOTFS_DIR}
 sudo cp -rf packages/weston/* ${TARGET_ROOTFS_DIR}
 
 # overlay folder
-if [ "$(ls -A overlay/common)" ];then
+if [ "$(ls overlay/common)" ];then
 	sudo cp -rf overlay/common/* $TARGET_ROOTFS_DIR/
 fi
-if [ "$(ls -A overlay/${NXP_TARGET_PRODUCT})" ];then
+if [ "$(ls overlay/${NXP_TARGET_PRODUCT})" ];then
 	sudo cp -rf overlay/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
 fi
 
 # overlay-debug folder
 if [ "$VERSION" == "debug" ] || [ "$VERSION" == "DEBUG" ]; then
-	if [ "$(ls -A overlay-debug/common)" ];then
+	if [ "$(ls overlay-debug/common)" ];then
 		sudo cp -rf overlay-debug/common/* $TARGET_ROOTFS_DIR/
 	fi
-	if [ "$(ls -A overlay-debug/${NXP_TARGET_PRODUCT})" ];then
+	if [ "$(ls overlay-debug/${NXP_TARGET_PRODUCT})" ];then
 		sudo cp -rf overlay-debug/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
 	fi
 fi
@@ -112,6 +112,9 @@ echo $VERSION_NUMBER-$VERSION > /etc/version
 
 # Set DNS server
 echo nameserver 8.8.8.8 > /etc/resolv.conf
+
+# Enable weston service
+systemctl enable weston.service
 
 apt-get clean
 history -c
