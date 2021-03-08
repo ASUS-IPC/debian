@@ -35,11 +35,10 @@ sudo cp -rf packages/libdrm/2.4.91.imx-r0/image/* ${TARGET_ROOTFS_DIR}
 sudo cp -rf packages/systemd-serialgetty/1.0-r5/image/* ${TARGET_ROOTFS_DIR}
 # weston-init
 sudo cp -rf packages/weston-init/1.0-r0/image/* ${TARGET_ROOTFS_DIR}
-# kernel module
-sudo cp -rf packages/linux-imx/modules/lib/modules/ ${TARGET_ROOTFS_DIR}/lib/
 # wayland
 # wayland-protocols
 # weston
+sudo cp -rf packages/weston_patch ${TARGET_ROOTFS_DIR}/root
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 cat <<EOF | HOME=/root sudo chroot $TARGET_ROOTFS_DIR
@@ -102,6 +101,8 @@ mkdir weston
 git clone https://source.codeaurora.org/external/imx/weston-imx.git
 cd weston-imx
 git checkout fb563901657b296c7c7c86d26602a622429e334f
+cp ~/weston_patch/* .
+git am *.patch
 ./autogen.sh --prefix=/usr --disable-silent-rules --disable-dependency-tracking \
 --enable-setuid-install --disable-rdp-compositor --enable-clients \
 --enable-simple-clients --enable-demo-clients-install --disable-colord \
