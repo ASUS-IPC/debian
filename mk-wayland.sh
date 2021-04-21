@@ -28,17 +28,17 @@ sudo tar -C ${TARGET_ROOTFS_DIR} -xpf debian-*.tar.gz
 
 # packages folder
 # imx-gpu-viv
-sudo cp -rf packages/imx-gpu-viv/1_6.2.4.p4.0-aarch64-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/imx-gpu-viv/1_6.2.4.p4.0-aarch64-r0/image/* ${TARGET_ROOTFS_DIR}
 # libdrm
-sudo cp -rf packages/libdrm/2.4.91.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/libdrm/2.4.91.imx-r0/image/* ${TARGET_ROOTFS_DIR}
 # systemd-serialgetty
-sudo cp -rf packages/systemd-serialgetty/1.0-r5/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/systemd-serialgetty/1.0-r5/image/* ${TARGET_ROOTFS_DIR}
 # weston-init
-sudo cp -rf packages/weston-init/1.0-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/weston-init/1.0-r0/image/* ${TARGET_ROOTFS_DIR}
 # wayland
 # wayland-protocols
 # weston
-sudo cp -rf packages/weston_patch ${TARGET_ROOTFS_DIR}/root
+sudo cp -rf packages/${NXP_SOC}/weston_patch ${TARGET_ROOTFS_DIR}/root
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 cat <<EOF | HOME=/root sudo chroot $TARGET_ROOTFS_DIR

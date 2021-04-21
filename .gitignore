@@ -11,5 +11,5 @@
 #
 rootfs
 binary
-packages/linux-imx
+packages/*/linux-imx
 debian-buster-*.tar.gz

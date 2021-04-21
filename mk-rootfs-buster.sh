@@ -31,39 +31,39 @@ sudo tar -C ${TARGET_ROOTFS_DIR} -xpf debian-*.tar.gz
 
 # packages folder
 # imx-gpu-viv
-sudo cp -rf packages/imx-gpu-viv/1_6.2.4.p4.0-aarch64-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/imx-gpu-viv/1_6.2.4.p4.0-aarch64-r0/image/* ${TARGET_ROOTFS_DIR}
 # libdrm
-sudo cp -rf packages/libdrm/2.4.91.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/libdrm/2.4.91.imx-r0/image/* ${TARGET_ROOTFS_DIR}
 # systemd-serialgetty
-sudo cp -rf packages/systemd-serialgetty/1.0-r5/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/systemd-serialgetty/1.0-r5/image/* ${TARGET_ROOTFS_DIR}
 # weston-init
-sudo cp -rf packages/weston-init/1.0-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/weston-init/1.0-r0/image/* ${TARGET_ROOTFS_DIR}
 # kernel module
-if [ "$(ls -A packages/linux-imx/modules/lib/modules)" ];then
-	sudo cp -rf packages/linux-imx/modules/lib/modules/ ${TARGET_ROOTFS_DIR}/lib/
+if [ "$(ls -A packages/${NXP_SOC}/linux-imx/modules/lib/modules)" ];then
+	sudo cp -rf packages/${NXP_SOC}/linux-imx/modules/lib/modules/ ${TARGET_ROOTFS_DIR}/lib/
 fi
 # wayland
-sudo cp -rf packages/wayland/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/wayland/* ${TARGET_ROOTFS_DIR}
 # wayland-protocols
-sudo cp -rf packages/wayland-protocols/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/wayland-protocols/* ${TARGET_ROOTFS_DIR}
 # weston
-sudo cp -rf packages/weston/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/weston/* ${TARGET_ROOTFS_DIR}
 
 # overlay folder
-if [ "$(ls overlay/common)" ];then
-	sudo cp -rf overlay/common/* $TARGET_ROOTFS_DIR/
+if [ "$(ls overlay/${NXP_SOC}/common)" ];then
+	sudo cp -rf overlay/${NXP_SOC}/common/* $TARGET_ROOTFS_DIR/
 fi
-if [ "$(ls overlay/${NXP_TARGET_PRODUCT})" ];then
-	sudo cp -rf overlay/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
+if [ "$(ls overlay/${NXP_SOC}/${NXP_TARGET_PRODUCT})" ];then
+	sudo cp -rf overlay/${NXP_SOC}/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
 fi
 
 # overlay-debug folder
 if [ "$VERSION" == "debug" ] || [ "$VERSION" == "DEBUG" ]; then
-	if [ "$(ls overlay-debug/common)" ];then
-		sudo cp -rf overlay-debug/common/* $TARGET_ROOTFS_DIR/
+	if [ "$(ls overlay-debug/${NXP_SOC}/common)" ];then
+		sudo cp -rf overlay-debug/${NXP_SOC}/common/* $TARGET_ROOTFS_DIR/
 	fi
-	if [ "$(ls overlay-debug/${NXP_TARGET_PRODUCT})" ];then
-		sudo cp -rf overlay-debug/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
+	if [ "$(ls overlay-debug/${NXP_SOC}/${NXP_TARGET_PRODUCT})" ];then
+		sudo cp -rf overlay-debug/${NXP_SOC}/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
 	fi
 fi
 
