@@ -3,7 +3,7 @@
 TARGET_ROOTFS_DIR=./binary
 MOUNTPOINT=./rootfs
 ROOTFSIMAGE=rootfs.img
-OUT=../Image-${NXP_TARGET_PRODUCT}-debian
+#IMAGES=../Image-${NXP_TARGET_PRODUCT}-debian
 
 echo Making rootfs!
 
@@ -42,6 +42,6 @@ echo Rootfs Image: ${ROOTFSIMAGE}
 e2fsck -p -f ${ROOTFSIMAGE}
 resize2fs -M ${ROOTFSIMAGE}
 
-[ ! -d ${OUT} ] && mkdir ${OUT}
-mv $ROOTFSIMAGE ${OUT}
+[ ! -d ${IMAGES} ] && mkdir ${IMAGES}
+mv $ROOTFSIMAGE ${IMAGES}
 

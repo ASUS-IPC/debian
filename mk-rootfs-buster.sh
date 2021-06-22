@@ -43,11 +43,11 @@ if [ "$(ls -A packages/${NXP_SOC}/linux-imx/modules/lib/modules)" ];then
 	sudo cp -rf packages/${NXP_SOC}/linux-imx/modules/lib/modules/ ${TARGET_ROOTFS_DIR}/lib/
 fi
 # wayland
-sudo cp -rf packages/${NXP_SOC}/wayland/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/wayland-debian/* ${TARGET_ROOTFS_DIR}
 # wayland-protocols
-sudo cp -rf packages/${NXP_SOC}/wayland-protocols/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/wayland-protocols-debian/* ${TARGET_ROOTFS_DIR}
 # weston
-sudo cp -rf packages/${NXP_SOC}/weston/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/weston-debian/* ${TARGET_ROOTFS_DIR}
 
 # overlay folder
 if [ "$(ls overlay/${NXP_SOC}/common)" ];then
@@ -86,7 +86,8 @@ DEBIAN_FRONTEND=noninteractive apt-get -y install \
   vim \
   wget \
   can-utils \
-  kbd 
+  kbd \
+  lsb-release
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
 v4l-utils alsa-utils git gcc less autoconf autopoint libtool \
