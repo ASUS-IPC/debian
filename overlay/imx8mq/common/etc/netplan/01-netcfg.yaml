@@ -1,0 +1,6 @@
+# This file describes the network interfaces available on your system
+# # For more information, see netplan(5).
+# # Set and change netplan renderer to NetworkManager GUI tool 
+network:
+  version: 2
+  renderer: NetworkManager

@@ -7,20 +7,20 @@ passcount1=0
 failcount2=0
 passcount2=0
 eth0_addr=192.168.100.100
-eth1_addr=192.168.100.99
+enp1s0_addr=192.168.100.99
 
 nslist=$(ip netns list)
 if [ "$nslist" == "" ]
 then
 	eth0=$(ifconfig eth0 | grep "eth0")
-	eth1=$(ifconfig eth1 | grep "eth1")
+	enp1s0=$(ifconfig enp1s0 | grep "enp1s0")
 	if [ "$eth0" == "" ]
 	then
 		echo "eth0 not exist" | tee -a $logfile
 		exit
-	elif [ "$eth1" == "" ]
+	elif [ "$enp1s0" == "" ]
 	then
-		echo "eth1 not exist" | tee -a $logfile
+		echo "enp1s0 not exist" | tee -a $logfile
 		exit
 	fi
 
@@ -29,9 +29,9 @@ then
 	ip link set eth0 netns ns_server
 	ip netns exec ns_server ip addr add dev eth0 $eth0_addr/24
 	ip netns exec ns_server ip link set dev eth0 up
-	ip link set eth1 netns ns_client
-	ip netns exec ns_client ip addr add dev eth1 $eth1_addr/24
-	ip netns exec ns_client ip link set dev eth1 up
+	ip link set enp1s0 netns ns_client
+	ip netns exec ns_client ip addr add dev enp1s0 $enp1s0_addr/24
+	ip netns exec ns_client ip link set dev enp1s0 up
 
 	ip netns exec ns_server route add default gw 192.168.100.1
 	ip netns exec ns_client route add default gw 192.168.100.1
@@ -46,9 +46,9 @@ do
 		echo
 		echo "============================================================"
 		echo "		LAN1 Tx -> LAN2 Rx Start"
-		ip netns exec ns_client iperf3 --one-off -s -B "$eth1_addr" -i 10 &
+		ip netns exec ns_client iperf3 --one-off -s -B "$enp1s0_addr" -i 10 &
 		sleep 2
-		ret=$(ip netns exec ns_server iperf3 -c "$eth1_addr" -B "$eth0_addr" -i 10 -t 30 --connect-timeout 3000 | grep Done)
+		ret=$(ip netns exec ns_server iperf3 -c "$enp1s0_addr" -B "$eth0_addr" -i 10 -t 30 --connect-timeout 3000 | grep Done)
 		if [ "$ret" == "" ]
 		then
 			((failcount1+=1))
@@ -67,10 +67,10 @@ do
 		echo "============================================================"
 #		echo "		LAN2 Tx -> LAN1 Rx Start"
 		echo "		Ethernet test start"
-		ip netns exec ns_client iperf3 --one-off -s -B "$eth1_addr" -i 10 &
+		ip netns exec ns_client iperf3 --one-off -s -B "$enp1s0_addr" -i 10 &
 		sleep 2
-#		ret=$(ip netns exec ns_server iperf3 -c "$eth1_addr" -B "$eth0_addr" -i 10 -t 30 -R --connect-timeout 3000 | grep Done)
-		ret=$(ip netns exec ns_server iperf3 -c "$eth1_addr" -B "$eth0_addr" -i 10 -t 43200 -R --connect-timeout 3000 | grep Done)
+#		ret=$(ip netns exec ns_server iperf3 -c "$enp1s0_addr" -B "$eth0_addr" -i 10 -t 30 -R --connect-timeout 3000 | grep Done)
+		ret=$(ip netns exec ns_server iperf3 -c "$enp1s0_addr" -B "$eth0_addr" -i 10 -t 43200 -R --connect-timeout 3000 | grep Done)
 		if [ "$ret" == "" ]
 		then
 			((failcount2+=1))

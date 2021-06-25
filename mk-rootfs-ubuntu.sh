@@ -50,6 +50,16 @@ sudo cp -rf packages/${NXP_SOC}/wayland-protocols-ubuntu/* ${TARGET_ROOTFS_DIR}
 # weston
 sudo cp -rf packages/${NXP_SOC}/weston-ubuntu/* ${TARGET_ROOTFS_DIR}
 
+#gstreamer
+sudo cp -rf packages/${NXP_SOC}/gstreamer1.0/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-base/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-good/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-bad/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+sudo cp -rf packages/${NXP_SOC}/imx-gst1.0-plugin/4.4.5-r0/image/* ${TARGET_ROOTFS_DIR}
+
+#glmark2
+sudo cp -rf packages/${NXP_SOC}/glmark2/2017.07+AUTOINC+ed20c633f1-r0/image/* ${TARGET_ROOTFS_DIR}
+
 # overlay folder
 if [ "$(ls overlay/${NXP_SOC}/common)" ];then
 	sudo cp -rf overlay/${NXP_SOC}/common/* $TARGET_ROOTFS_DIR/
@@ -74,21 +84,10 @@ cat <<EOF | HOME=/root sudo chroot $TARGET_ROOTFS_DIR
 apt-get update
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
-  sudo \
-  ssh \
-  net-tools \
-  network-manager \
-  iputils-ping \
-  rsyslog \
-  bash-completion \
-  htop \
-  resolvconf \
-  dialog \
-  vim \
-  wget \
-  can-utils \
-  kbd \
-  lsb-release
+  sudo ssh net-tools network-manager iputils-ping iperf3 \
+  rsyslog bash-completion htop resolvconf dialog vim wget \
+  can-utils kbd gdisk parted exfat-utils exfat-fuse ntfs-3g \
+  netplan.io whiptail
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
 v4l-utils alsa-utils git gcc less autoconf autopoint libtool \
@@ -117,6 +116,13 @@ echo nameserver 8.8.8.8 > /etc/resolv.conf
 
 # Enable weston service
 systemctl enable weston.service
+
+systemctl enable resize-helper.service
+systemctl enable adbd.service
+
+update-rc.d adbd.sh defaults
+update-rc.d rtcinit.sh defaults
+update-rc.d rc.local defaults
 
 apt-get clean
 history -c
