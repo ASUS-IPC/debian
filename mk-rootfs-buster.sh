@@ -119,6 +119,9 @@ systemctl enable weston.service
 systemctl enable resize-helper.service
 systemctl enable adbd.service
 
+# Enable Connectivity Manager related service
+systemctl enable asus_failover.service
+
 update-rc.d adbd.sh defaults
 update-rc.d rtcinit.sh defaults
 update-rc.d rc.local defaults
