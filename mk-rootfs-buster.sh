@@ -98,6 +98,9 @@ libudev-dev libinput-dev libxkbcommon-dev libpam0g-dev libx11-xcb-dev \
 libxcb-xfixes0-dev libxcb-composite0-dev libxcursor-dev libxcb-shape0-dev \
 libdbus-1-dev libdbus-glib-1-dev libffi-dev libxml2-dev
 
+DEBIAN_FRONTEND=noninteractive apt-get -y install \
+  modemmanager ppp libqmi-utils libmbim-utils libxml2-utils
+
 # Add User
 useradd -s '/bin/bash' -m -G adm,sudo asus
 echo "asus:asus" | chpasswd
@@ -121,6 +124,7 @@ systemctl enable adbd.service
 
 # Enable Connectivity Manager related service
 systemctl enable asus_failover.service
+systemctl enable mm_keepalive.service
 
 update-rc.d adbd.sh defaults
 update-rc.d rtcinit.sh defaults
