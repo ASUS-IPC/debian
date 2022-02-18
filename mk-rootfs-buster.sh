@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-VERSION_NUMBER=1.0.0
-VERSION=DEBUG
+#VERSION_NUMBER=1.0.0
+#VERSION=DEBUG
 
 # Directory contains the target rootfs
 TARGET_ROOTFS_DIR="binary"
