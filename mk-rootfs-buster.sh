@@ -110,6 +110,10 @@ echo "root:root" | chpasswd
 echo "${NXP_HOSTNAME}" > /etc/hostname
 echo 127.0.0.1$'\t'${NXP_HOSTNAME} >> /etc/hosts
 
+# Switching iptables/ip6tables to the legacy version
+update-alternatives --set iptables /usr/sbin/iptables-legacy
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
 #--------------- Set image version ---------------
 echo $VERSION_NUMBER-$VERSION > /etc/version
 
