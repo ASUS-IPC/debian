@@ -1,0 +1,12 @@
+[unit]
+Description=Check docker images for EdgeX
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/etc/EdgeX/EdgeX.sh
+ExecStop=/etc/EdgeX/EdgeXdown.sh
+Timeout=infinity
+
+[Install]
+WantedBy=multi-user.target

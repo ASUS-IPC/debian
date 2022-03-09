@@ -101,6 +101,13 @@ libdbus-1-dev libdbus-glib-1-dev libffi-dev libxml2-dev
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
   modemmanager ppp libqmi-utils libmbim-utils libxml2-utils
 
+# Install Docker Engine
+dpkg -i /etc/EdgeX/EdgeX_deb/*.deb
+
+# Install Docker Compose
+chmod +x /etc/EdgeX/docker-compose
+ln -s -f /etc/EdgeX/docker-compose /usr/bin/docker-compose
+
 # Add User
 useradd -s '/bin/bash' -m -G adm,sudo asus
 echo "asus:asus" | chpasswd
@@ -129,6 +136,9 @@ systemctl enable adbd.service
 # Enable Connectivity Manager related service
 systemctl enable asus_failover.service
 systemctl enable mm_keepalive.service
+
+# Enable EdgeX service
+systemctl enable EdgeX.service
 
 update-rc.d adbd.sh defaults
 update-rc.d rtcinit.sh defaults
