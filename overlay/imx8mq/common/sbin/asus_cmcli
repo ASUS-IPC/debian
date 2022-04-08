@@ -1,5 +1,5 @@
 #!/bin/bash
-# VERSION=1.0_20211123
+# VERSION=1.1_20220408
 TAG="asus_cmcli"
 NETWORK_NAME="Cellular"
 APN_LIST=/etc/mm/apns-full.xml
@@ -142,18 +142,22 @@ case "$1" in
         log "modem power state is $current"
         if [ "$current" == "on" ]; then
             log "power already on"
-        elif [ "$current" == "off" ]; then
-            log "reset modem to turn on"
+        fi
+        log "set power state on"
+        if ! mmcli -m $modem --set-power-state-on &> /dev/null; then
+            log "fail, need reboot the modem to turn on..."
             mmcli -m $modem -r &> /dev/null
-            mmcli -m $modem -w &> /dev/null
+            until ! mmcli -m $modem &> /dev/null; do
+                sleep 1
+            done
+            log "waiting for modem power on..."
             until mmcli -m $modem &> /dev/null; do
                 sleep 1
             done
-            log "successfully reset"
+            log "successfully turn on the modem"
         else
-            log "set modem power state on"
-            mmcli -m $modem --set-power-state-on &> /dev/null
             mmcli -m $modem -e &> /dev/null
+            log "successfully set power state on"
         fi
     else
         log "modem not detected"
@@ -169,8 +173,11 @@ case "$1" in
         else
             mmcli -m $modem -d &> /dev/null
             if ! mmcli -m $modem --set-power-state-off &> /dev/null; then
+                log "fail to set power state off"
                 mmcli -m $modem -e &> /dev/null
                 exit 1
+            else
+                log "successfully set power state off"
             fi
         fi
     else
