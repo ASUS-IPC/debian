@@ -86,7 +86,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -y install \
   sudo ssh net-tools network-manager iputils-ping iperf3 \
   rsyslog bash-completion htop resolvconf dialog vim wget \
   can-utils kbd gdisk parted exfat-utils exfat-fuse ntfs-3g \
-  netplan.io whiptail
+  netplan.io whiptail i2c-tools
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
 v4l-utils alsa-utils git gcc less autoconf autopoint libtool \
