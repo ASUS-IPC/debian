@@ -10,5 +10,6 @@
 # bits.
 #
 # By default this script does nothing.
-
+systemctl stop serial-getty@ttymxc0.service
+systemctl disable serial-getty@ttymxc0.service
 exit 0
