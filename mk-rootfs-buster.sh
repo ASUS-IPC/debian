@@ -99,7 +99,7 @@ libxcb-xfixes0-dev libxcb-composite0-dev libxcursor-dev libxcb-shape0-dev \
 libdbus-1-dev libdbus-glib-1-dev libffi-dev libxml2-dev
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
-  modemmanager ppp libqmi-utils libmbim-utils libxml2-utils
+  modemmanager ppp libqmi-utils libmbim-utils libxml2-utils usbutils bluez
 
 # Install Docker Engine
 dpkg -i /etc/EdgeX/EdgeX_deb/*.deb
