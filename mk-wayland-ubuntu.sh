@@ -61,7 +61,8 @@ DEBIAN_FRONTEND=noninteractive apt-get -y install \
   wget \
   can-utils \
   locales \
-  kbd 
+  kbd \
+  usbutils
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install \
 v4l-utils alsa-utils git gcc less autoconf autopoint libtool \
