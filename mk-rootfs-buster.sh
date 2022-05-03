@@ -49,13 +49,6 @@ sudo cp -rf packages/${NXP_SOC}/wayland-protocols-debian/* ${TARGET_ROOTFS_DIR}
 # weston
 sudo cp -rf packages/${NXP_SOC}/weston-debian/* ${TARGET_ROOTFS_DIR}
 
-#gstreamer
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-base/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-good/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-bad/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/imx-gst1.0-plugin/4.4.5-r0/image/* ${TARGET_ROOTFS_DIR}
-
 #glmark2
 sudo cp -rf packages/${NXP_SOC}/glmark2/2017.07+AUTOINC+ed20c633f1-r0/image/* ${TARGET_ROOTFS_DIR}
 
@@ -76,6 +69,10 @@ if [ "$VERSION" == "debug" ] || [ "$VERSION" == "DEBUG" ]; then
 		sudo cp -rf overlay-debug/${NXP_SOC}/${NXP_TARGET_PRODUCT}/* $TARGET_ROOTFS_DIR/
 	fi
 fi
+
+# gstreamer packages folder
+sudo mkdir -p $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/imx-gstreamer/ $TARGET_ROOTFS_DIR/packages
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 cat <<EOF | HOME=/root sudo chroot $TARGET_ROOTFS_DIR
@@ -107,6 +104,12 @@ dpkg -i /etc/EdgeX/EdgeX_deb/*.deb
 # Install Docker Compose
 chmod +x /etc/EdgeX/docker-compose
 ln -s -f /etc/EdgeX/docker-compose /usr/bin/docker-compose
+
+# Install Imx gstreamer package
+dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gstreamer_1.14.4-1_arm64.deb
+dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-base_1.14.4-1_arm64.deb
+dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-good_1.14.4-1_arm64.deb
+dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-bad_1.14.4-1_arm64.deb
 
 # Add User
 useradd -s '/bin/bash' -m -G adm,sudo asus
