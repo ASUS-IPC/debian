@@ -11,6 +11,4 @@
 #
 # By default this script does nothing.
 bash /sbin/wifi_init.sh
-systemctl stop serial-getty@ttymxc0.service
-systemctl disable serial-getty@ttymxc0.service
 exit 0
