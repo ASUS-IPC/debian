@@ -51,11 +51,11 @@ sudo cp -rf packages/${NXP_SOC}/wayland-protocols-ubuntu/* ${TARGET_ROOTFS_DIR}
 sudo cp -rf packages/${NXP_SOC}/weston-ubuntu/* ${TARGET_ROOTFS_DIR}
 
 #gstreamer
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-base/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-good/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-bad/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
-sudo cp -rf packages/${NXP_SOC}/imx-gst1.0-plugin/4.4.5-r0/image/* ${TARGET_ROOTFS_DIR}
+#sudo cp -rf packages/${NXP_SOC}/gstreamer1.0/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+#sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-base/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+#sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-good/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+#sudo cp -rf packages/${NXP_SOC}/gstreamer1.0-plugins-bad/1.14.4.imx-r0/image/* ${TARGET_ROOTFS_DIR}
+#sudo cp -rf packages/${NXP_SOC}/imx-gst1.0-plugin/4.4.5-r0/image/* ${TARGET_ROOTFS_DIR}
 
 #glmark2
 sudo cp -rf packages/${NXP_SOC}/glmark2/2017.07+AUTOINC+ed20c633f1-r0/image/* ${TARGET_ROOTFS_DIR}
