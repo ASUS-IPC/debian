@@ -1,0 +1,2 @@
+#### Write usb_adb_en or usb_rndis_en here to select the gadget fuction ####
+usb_adb_en

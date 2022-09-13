@@ -9,9 +9,10 @@
 # Description:       Linux ADB
 ### END INIT INFO
 
-# setup configfs for adbd
+# setup configfs for adbd, rndis
 
 ADB_EN=off
+RNDIS_EN=off
 
 USB_ATTRIBUTE=0x409
 USB_GROUP=asus
@@ -22,6 +23,50 @@ USB_CONFIGFS_DIR=${CONFIGFS_DIR}/usb_gadget/${USB_GROUP}
 USB_STRINGS_DIR=${USB_CONFIGFS_DIR}/strings/${USB_ATTRIBUTE}
 USB_FUNCTIONS_DIR=${USB_CONFIGFS_DIR}/functions
 USB_CONFIGS_DIR=${USB_CONFIGFS_DIR}/configs/${USB_SKELETON}
+
+make_config_string()
+{
+	tmp=$CONFIG_STRING
+	if [ -n "$CONFIG_STRING" ]; then
+		CONFIG_STRING=${tmp}_${1}
+	else
+		CONFIG_STRING=$1
+	fi
+}
+
+parameter_init()
+{
+	while read line
+	do
+		case "$line" in
+			usb_adb_en)
+				ADB_EN=on
+				make_config_string adb
+				;;
+			usb_rndis_en)
+				RNDIS_EN=on
+				make_config_string rndis
+				;;
+		esac
+	done < $DIR/.usb_config
+
+
+	case "$CONFIG_STRING" in
+		adb)
+			VID=0x0b05
+			PID=0x7770
+			;;
+		rndis)
+			VID=0x0B05
+			PID=0x7774
+			;;
+		rndis_adb | adb_rndis)
+			VID=0x0B05
+			PID=0x7775
+			;;
+	esac
+}
+
 
 configfs_init()
 {
@@ -58,17 +103,31 @@ function_init()
 			ln -s ${USB_FUNCTIONS_DIR}/ffs.adb ${USB_CONFIGS_DIR}/ffs.adb
 		fi
 	fi
+
+	if [ $RNDIS_EN = on ];then
+		if [ ! -e "${USB_FUNCTIONS_DIR}/rndis.gs0" ] ;
+		then
+			mkdir -p ${USB_FUNCTIONS_DIR}/rndis.gs0
+			ln -s ${USB_FUNCTIONS_DIR}/rndis.gs0 ${USB_CONFIGS_DIR}/rndis.gs0
+		fi
+	fi
 }
 
-case "$1" in
-start)
-	ADB_EN=on
-	CONFIG_STRING=adb
-	VID=0x0b05
-	PID=0x7770
+start() {
+	DIR=$(cd `dirname $0`; pwd)
+	if [ ! -e "$DIR/.usb_config" ]; then
+		echo "$0: Cannot find .usb_config, , use adb as default"
+		ADB_EN=on
+		CONFIG_STRING=adb
+	fi
+
+	parameter_init
 	if [ -z $CONFIG_STRING ]; then
-		echo "$0: no function be selected"
-		exit 0
+		echo "$0: no function be selected, use adb as default"
+		ADB_EN=on
+		CONFIG_STRING=adb
+		VID=0x0b05
+		PID=0x7770
 	fi
 	configfs_init
 	function_init
@@ -86,18 +145,27 @@ start)
 
 	UDC=`ls /sys/class/udc/| awk '{print $1}'`
 	 echo $UDC > ${USB_CONFIGFS_DIR}/UDC
-	;;
-stop)
+}
+
+stop() {
 	echo "none" > ${USB_CONFIGFS_DIR}/UDC
 	if [ $ADB_EN = on ];then
 		start-stop-daemon --stop --oknodo --pidfile /var/run/adbd.pid --retry 5
 	fi
-	;;
-restart|reload)
-	;;
-*)
+}
+
+restart() {
+	stop
+	sleep 2
+	start
+}
+
+
+case $1 in
+	start|stop|restart) "$1" ;;
+	*)
 	echo "Usage: $0 {start|stop|restart}"
 	exit 1
 esac
 
-exit 0
+exit $?
