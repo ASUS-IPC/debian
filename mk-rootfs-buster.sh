@@ -140,6 +140,8 @@ systemctl enable adbd.service
 systemctl enable asus_failover.service
 systemctl enable mm_keepalive.service
 
+systemctl enable mcu_daemon.service
+
 # Disable serivce that occupy ttymxc0
 systemctl disable serial-getty@ttymxc0.service
 # Enable EdgeX service
