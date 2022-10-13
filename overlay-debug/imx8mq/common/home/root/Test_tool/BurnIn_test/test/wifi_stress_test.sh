@@ -1,6 +1,8 @@
 #!/bin/bash
 logfile=$2
-wifi_gw=$(route -n | grep wlan0 | grep UG | awk {'printf $2'})
+# We assume there is only wifi interface
+wifi_dev=$(find /sys/class/net/*/ -name "phy80211" | awk -F'/' '{print $5}')
+wifi_gw=$(route -n | grep $wifi_dev | grep UG | awk {'printf $2'})
 
 sleep 5
 pass_cnt=0
