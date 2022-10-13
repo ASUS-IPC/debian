@@ -487,7 +487,7 @@ function detectModule(){
 			echo -ne $UBLOX_HW_RESET >  $GPSPORT
 			
 			sleep 1
-			microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
+			busybox microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
 				NMEAHead=`echo $line | awk -F "," '{print $1}'`
 				echo "$line"  >>  $1
 				if $def_debug ; then
@@ -518,7 +518,7 @@ function detectModule(){
 		if [[ $current_baudrate == $baudrate ]]; then
 			# Do locosys full cold start
 			echo -ne "\x24\x50\x4D\x54\x4B\x31\x30\x34\x2A\x33\x37\x0D\x0A" > $GPSPORT
-			microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
+			busybox microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
 				NMEAHead=`echo $line | awk -F "," '{print $1}'`
 				echo "$line"  >>  $1
 				if $def_debug ; then
@@ -789,7 +789,7 @@ function enableUBX(){
 
 function send_at_command() {
     if [ -e ${ATPORT} ]; then
-        echo -ne "${1}\r" | microcom -t 3000 ${ATPORT} > ${ACK}
+        echo -ne "${1}\r" | busybox microcom -t 3000 ${ATPORT} > ${ACK}
     else
         echo "ERROR device not found" > ${ACK}
     fi
@@ -973,7 +973,7 @@ case "$1" in
 				#echo -ne "\x24\x50\x49\x4E\x56\x43\x53\x54\x52\x2C\x31\x34\x2A\x33\x45\x0D\x0A" > $GPSPORT
 				# need check $PINVMSTR,0*05 and $PINVMSTR,2*07
 				bSend=0
-				microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
+				busybox microcom -t 2000 -s $baudrate $GPSPORT | while read -r line; do
 					NMEAHead=`echo $line | awk -F "," '{print $1}'`
 					if [[ $NMEAHead != '$PINVMSTR' ]]; then
 						if [ "$bSend" == 0 ]; then
