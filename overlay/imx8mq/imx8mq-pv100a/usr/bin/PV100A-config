@@ -165,10 +165,10 @@ do_change_uart_protocol() {
       return 0
     elif [ $RET -eq 0 ]; then
       case "$FUN" in
-        1\ *) sed -i /boot/config.txt -e "s/fsl-imx8mq-pe100a-rs485-overlay/fsl-imx8mq-pe100a-rs232-overlay/" 
+        1\ *) sed -i /boot/config.txt -e "s/fsl-imx8mq-pv100a-rs485-overlay/fsl-imx8mq-pv100a-rs232-overlay/" 
         whiptail --msgbox "Protocol is now rs232" 20 60 1
         ;;
-        2\ *) sed -i /boot/config.txt -e "s/fsl-imx8mq-pe100a-rs232-overlay/fsl-imx8mq-pe100a-rs485-overlay/" 
+        2\ *) sed -i /boot/config.txt -e "s/fsl-imx8mq-pv100a-rs232-overlay/fsl-imx8mq-pv100a-rs485-overlay/" 
         whiptail --msgbox "Protocol is now rs485" 20 60 1
         ;;
         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;
