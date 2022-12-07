@@ -16,5 +16,6 @@ echo "out" > /sys/class/gpio/gpio13/direction
 echo "0" > /sys/class/gpio/gpio13/value
 echo "13" > /sys/class/gpio/unexport
 
+bash /sbin/hwclock_mcu.sh
 bash /sbin/wifi_init.sh
 exit 0
