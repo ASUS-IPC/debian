@@ -11,4 +11,5 @@
 #
 # By default this script does nothing.
 bash /sbin/wifi_init.sh
+bash /sbin/can_init.sh
 exit 0

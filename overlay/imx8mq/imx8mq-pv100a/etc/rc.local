@@ -18,4 +18,5 @@ echo "13" > /sys/class/gpio/unexport
 
 bash /sbin/hwclock_mcu.sh
 bash /sbin/wifi_init.sh
+bash /sbin/can_init.sh
 exit 0
