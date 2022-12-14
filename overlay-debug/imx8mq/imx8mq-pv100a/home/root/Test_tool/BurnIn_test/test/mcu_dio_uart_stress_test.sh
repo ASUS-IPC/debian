@@ -9,11 +9,13 @@ mode=232
 COM1=3
 COM2=4
 uart_err_cnt=0
+baud=9600
+COMPORT_TEST="/MCU_test_tool/comport_test"
 
-comport_test_pv100a -c $COM1 -s 0 > /dev/null 2>&1
-comport_test_pv100a -c $COM1 -s 1 -m $mode > /dev/null 2>&1
-comport_test_pv100a -c $COM2 -s 0 > /dev/null 2>&1
-comport_test_pv100a -c $COM2 -s 1 -m $mode > /dev/null 2>&1
+$COMPORT_TEST -c $COM1 -s 0 > /dev/null 2>&1
+$COMPORT_TEST -c $COM1 -s 1 -m $mode -b $baud > /dev/null 2>&1
+$COMPORT_TEST -c $COM2 -s 0 > /dev/null 2>&1
+$COMPORT_TEST -c $COM2 -s 1 -m $mode -b $baud > /dev/null 2>&1
 
 while [ 1 != 2 ]
 do
@@ -62,9 +64,9 @@ do
 	fi
 	echo "" | tee -a $logfile
 	echo "COM3 write" | tee -a $logfile
-	comport_test_pv100a -c $COM1 -w "1234321 " > /dev/null 2>&1 &
+	$COMPORT_TEST -c $COM1 -w "1234321 " | tee -a $logfile
 	sleep 0.1
-	result=$(comport_test_pv100a -c $COM2 -r | grep "1234321")
+	result=$($COMPORT_TEST -c $COM2 -r | tee -a $logfile | grep "1234321")
 	if [[ -n "$result" ]]; then
 		echo "COM4 read Pass" | tee -a $logfile
 		uart_err_cnt=0
@@ -74,9 +76,9 @@ do
 	fi
 	echo "" | tee -a $logfile
 	echo "COM4 write" | tee -a $logfile
-	comport_test_pv100a -c $COM2 -w "4321234 " > /dev/null 2>&1 &
+	$COMPORT_TEST -c $COM2 -w "4321234 " | tee -a $logfile
 	sleep 0.1
-	result=$(comport_test_pv100a -c $COM1 -r | grep "4321234")
+	result=$($COMPORT_TEST -c $COM1 -r | tee -a $logfile | grep "4321234")
 	if [[ -n "$result" ]]; then
 		echo "COM3 read Pass" | tee -a $logfile
 		uart_err_cnt=0
@@ -87,8 +89,8 @@ do
 	echo "" | tee -a $logfile
 	if [[ $do_err_cnt -ge 5 || $di_err_cnt -ge 5 || $uart_err_cnt -ge 5 ]]; then
 		echo "$(date +'%Y%m%d_%H%M') DIO/UART  continue fail over 5 times, do_err_cnt=$do_err_cnt, di_err_cnt=$di_err_cnt, uart_err_cnt=$uart_err_cnt"  | tee -a $logfile
-		comport_test_pv100a -c $COM1 -s 0 > /dev/null 2>&1
-		comport_test_pv100a -c $COM2 -s 0 > /dev/null 2>&1
+		$COMPORT_TEST -c $COM1 -s 0 > /dev/null 2>&1
+		$COMPORT_TEST -c $COM2 -s 0 > /dev/null 2>&1
 		exit 1
 	fi	
 done
