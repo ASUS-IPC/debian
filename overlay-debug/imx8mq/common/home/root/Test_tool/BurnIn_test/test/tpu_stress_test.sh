@@ -20,7 +20,7 @@ while [ 1 != 2 ]
 do
 	rm $logfile2
 	sleep 1
-	python3 coral_cts.py --tpu $tpu_num --inf 1 --iteration 50 | tee $logfile2
+	python3 coral_cts.py --tpu $tpu_num --inf 50 --iteration 50 | tee $logfile2
 	Result=`cat $logfile2 | grep Overall | awk '{print $3}'`
 	if [ "$Result" == "Passed" ]
 	then

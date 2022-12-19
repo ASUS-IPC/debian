@@ -89,6 +89,8 @@ class TestSuite():
             output_parse: String used to parse output to useful data.
         """
         self._file_print("\n***** " + header + " *****\n")
+        self._file_print("***** " + header + " *****\n")
+        self._file_print("***** " + header + " *****\n")
         try:
             proc = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -98,6 +100,9 @@ class TestSuite():
             proc.wait()
         except Exception as e:
             self._file_print(str(e) + "\n")
+        self._file_print("******************************\n")
+        self._file_print("******************************\n")
+        self._file_print("******************************\n\n\n")
 
     def _write_thermal_summary(self):
         self._file_print("\n" + SECTION_HEADER)
