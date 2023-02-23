@@ -10,8 +10,12 @@ if [ ! ${NXP_ARCH} ]; then
 	NXP_ARCH='arm64'
 fi
 
-if [ -e debian-${RELEASE}-*.tar.gz ]; then
-	rm debian-${RELEASE}-*.tar.gz
+if [ -e ../rootfs-base/debian-${RELEASE}-*.tar.gz ]; then
+	rm ../rootfs-base/debian-${RELEASE}-*.tar.gz
+fi
+
+if [ -e ${TARGET_ROOTFS_DIR} ]; then
+        sudo rm -rf ${TARGET_ROOTFS_DIR}
 fi
 
 sudo apt -y install debian-archive-keyring
@@ -21,4 +25,4 @@ sudo qemu-debootstrap --arch=${NXP_ARCH} \
 	--variant=buildd \
 	--exclude=debfoster ${RELEASE} ${TARGET_ROOTFS_DIR} http://ftp.debian.org/debian
 
-sudo tar zcvf debian-${RELEASE}-$(date +%Y%m%d).tar.gz -C ${TARGET_ROOTFS_DIR} .
+sudo tar zcvf ../rootfs-base/debian-${RELEASE}-$(date +%Y%m%d).tar.gz -C ${TARGET_ROOTFS_DIR} .
