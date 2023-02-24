@@ -16,7 +16,7 @@ if [ ! $VERSION ]; then
 	VERSION="debug"
 fi
 
-if [ ! -e debian-*.tar.gz ]; then
+if [ ! -e debian-buster-base.tar.gz ]; then
 	echo "\033[36m Run mk-base-debian.sh first \033[0m"
 fi
 
@@ -27,7 +27,7 @@ finish() {
 trap finish ERR
 
 echo -e "\033[36m Extract image \033[0m"
-sudo tar -C ${TARGET_ROOTFS_DIR} -xpf debian-*.tar.gz
+sudo tar -C ${TARGET_ROOTFS_DIR} -xpf debian-buster-base.tar.gz
 
 # packages folder
 # imx-gpu-viv

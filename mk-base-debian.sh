@@ -10,8 +10,14 @@ if [ ! ${NXP_ARCH} ]; then
 	NXP_ARCH='arm64'
 fi
 
-if [ -e ../rootfs-base/debian-${RELEASE}-*.tar.gz ]; then
-	rm ../rootfs-base/debian-${RELEASE}-*.tar.gz
+ROOTFS_BASE_DIR="../rootfs-base"
+
+if [ ! -e $ROOTFS_BASE_DIR ]; then
+  ROOTFS_BASE_DIR="."
+fi
+
+if [ -e $ROOTFS_BASE_DIR/debian-${RELEASE}-arm64-*.tar.gz ]; then
+	rm $ROOTFS_BASE_DIR /debian-${RELEASE}-arm64-*.tar.gz
 fi
 
 if [ -e ${TARGET_ROOTFS_DIR} ]; then
@@ -25,4 +31,4 @@ sudo qemu-debootstrap --arch=${NXP_ARCH} \
 	--variant=buildd \
 	--exclude=debfoster ${RELEASE} ${TARGET_ROOTFS_DIR} http://ftp.debian.org/debian
 
-sudo tar zcvf ../rootfs-base/debian-${RELEASE}-$(date +%Y%m%d).tar.gz -C ${TARGET_ROOTFS_DIR} .
+sudo tar zcvf $ROOTFS_BASE_DIR/debian-${RELEASE}-arm64-$(date +%Y%m%d).tar.gz -C ${TARGET_ROOTFS_DIR} .
