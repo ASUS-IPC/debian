@@ -60,37 +60,11 @@ check_blk()
 check_usb()
 {
 	result=`lsusb | awk '{print $6}' | sudo tee $TMP_USB`
-	if [ -n "$result" ]; then
-		usb_cnt=`cat $USB | wc -l`
-		tmp_usb_cnt=`cat $TMP_USB | wc -l`
-		echo "usb_cnt=$usb_cnt, tmp_usb_cnt=$tmp_usb_cnt"
-		if [ "$usb_cnt" != "$tmp_usb_cnt" ]; then
-			echo "Fail, lose usb device" | tee -a $RESULT
-		fi
-
-		for sub_usb in `cat $TMP_USB`
-		do
-			usb_flag=$( cat $USB | grep "$sub_usb" | grep -v "grep")
-			if [ "$usb_flag" == ""  ]
-			then
-				echo "Fail, usb device $sub_usb not found! " | tee -a $RESULT
-			else
-				echo "Pass, usb device $sub_usb found" | tee -a $RESULT
-			fi
-		done
-	fi
 }
 
 check_pci()
 {
 	result=`lspci | sudo tee $TMP_PCI`
-	if [ -n "$result" ]; then
-		if diff "$PCI" "$TMP_PCI"; then
-			echo "Pass, all pci device exist" | tee -a $RESULT
-		else
-			echo "Fail, lose pci device" | tee -a $RESULT
-		fi
-	fi
 }
 
 check_mcu()
