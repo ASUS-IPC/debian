@@ -72,7 +72,11 @@ fi
 
 # gstreamer packages folder
 sudo mkdir -p $TARGET_ROOTFS_DIR/packages
-sudo cp -rf packages/${NXP_SOC}/imx-gstreamer/ $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/gstreamer1.0 $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/imx-parser $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/imx-codec $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/imx-vpu $TARGET_ROOTFS_DIR/packages
+sudo cp -rf packages/${NXP_SOC}/imx-vpuwrap $TARGET_ROOTFS_DIR/packages
 
 sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
 cat <<EOF | HOME=/root sudo chroot $TARGET_ROOTFS_DIR
@@ -105,11 +109,15 @@ dpkg -i /etc/EdgeX/EdgeX_deb/*.deb
 chmod +x /etc/EdgeX/docker-compose
 ln -s -f /etc/EdgeX/docker-compose /usr/bin/docker-compose
 
-# Install Imx gstreamer package
-dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gstreamer_1.14.4-1_arm64.deb
-dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-base_1.14.4-1_arm64.deb
-dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-good_1.14.4-1_arm64.deb
-dpkg -i --force-overwrite /packages/imx-gstreamer/imx-gst-plugins-bad_1.14.4-1_arm64.deb
+# Install Gstreamer Package
+dpkg -i --force-overwrite /packages/imx-codec/*.deb
+dpkg -i --force-overwrite /packages/imx-parser/*.deb
+dpkg -i --force-overwrite /packages/imx-vpu/*.deb
+dpkg -i --force-overwrite /packages/imx-vpuwrap/*.deb
+dpkg -i --force-overwrite /packages/gstreamer1.0/*.deb
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install -f
+DEBIAN_FRONTEND=noninteractive apt-get -y install gstreamer1.0-alsa
 
 # Add User
 useradd -s '/bin/bash' -m -G adm,sudo asus
