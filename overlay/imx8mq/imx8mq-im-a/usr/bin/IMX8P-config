@@ -102,7 +102,6 @@ Current Resolution: \
             sed -i '17s/^.//' $Weston_PATH
             sed -i '18s/^.//' $Weston_PATH
         fi
-        sed -i "10cmode=$Resolution_Rate" $Weston_PATH
         sed -i "18cmode=$Resolution_Rate" $Weston_PATH
         ASK_TO_REBOOT=1
     fi
