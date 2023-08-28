@@ -1,4 +1,4 @@
-#  * Copyright 2021 Intel Corporation.
+#  * Copyright 2023 Intel Corporation.
 #  *
 #  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
 #  * in compliance with the License. You may obtain a copy of the License at
@@ -10,7 +10,7 @@
 #  * or implied. See the License for the specific language governing permissions and limitations under
 #  * the License.
 #  *
-#  * EdgeX Foundry, Kamakura (2.2.0) release
+#  * EdgeX Foundry, Minnesota (3.0.x) release
 #  *******************************************************************************/
 #
 #
@@ -24,107 +24,162 @@
 #
 # From the compose-builder folder use `make build` to regenerate all standard compose files variations
 #
-networks:
-  edgex-network:
-    driver: bridge
+name: edgex
 services:
-  app-service-rules:
+  app-rules-engine:
     container_name: edgex-app-rules-engine
     depends_on:
-    - consul
-    - data
+      consul:
+        condition: service_started
+      core-data:
+        condition: service_started
     environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
       EDGEX_PROFILE: rules-engine
       EDGEX_SECURITY_SECRET_STORE: "false"
-      REGISTRY_HOST: edgex-core-consul
       SERVICE_HOST: edgex-app-rules-engine
-      TRIGGER_EDGEXMESSAGEBUS_PUBLISHHOST_HOST: edgex-redis
-      TRIGGER_EDGEXMESSAGEBUS_SUBSCRIBEHOST_HOST: edgex-redis
     hostname: edgex-app-rules-engine
-    image: edgexfoundry/app-service-configurable-arm64:2.2.0
+    image: edgexfoundry/app-service-configurable-arm64:3.0.0
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:59701:59701/tcp
-    read_only: true
-    restart: always
-    security_opt:
-    - no-new-privileges:true
-    user: 2002:2001
-  command:
-    container_name: edgex-core-command
-    depends_on:
-    - consul
-    - database
-    - metadata
-    environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
-      EDGEX_SECURITY_SECRET_STORE: "false"
-      REGISTRY_HOST: edgex-core-consul
-      SERVICE_HOST: edgex-core-command
-    hostname: edgex-core-command
-    image: edgexfoundry/core-command-arm64:2.2.0
-    networks:
-      edgex-network: {}
-    ports:
-    - 127.0.0.1:59882:59882/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59701
+      published: "59701"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
     - no-new-privileges:true
     user: 2002:2001
   consul:
-    command: agent -ui -bootstrap -server -client 0.0.0.0
+    command:
+    - agent
+    - -ui
+    - -bootstrap
+    - -server
+    - -client
+    - 0.0.0.0
     container_name: edgex-core-consul
     hostname: edgex-core-consul
-    image: consul:1.10.10
+    image: hashicorp/consul:1.15.2
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:8500:8500/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 8500
+      published: "8500"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
     - no-new-privileges:true
     user: root:root
     volumes:
-    - consul-config:/consul/config:z
-    - consul-data:/consul/data:z
-  data:
+    - type: volume
+      source: consul-config
+      target: /consul/config
+      volume: {}
+    - type: volume
+      source: consul-data
+      target: /consul/data
+      volume: {}
+  core-command:
+    container_name: edgex-core-command
+    depends_on:
+      consul:
+        condition: service_started
+      core-metadata:
+        condition: service_started
+      database:
+        condition: service_started
+    environment:
+      EDGEX_SECURITY_SECRET_STORE: "false"
+      EXTERNALMQTT_URL: tcp://edgex-mqtt-broker:1883
+      SERVICE_HOST: edgex-core-command
+    hostname: edgex-core-command
+    image: edgexfoundry/core-command-arm64:3.0.0
+    networks:
+      edgex-network: null
+    ports:
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59882
+      published: "59882"
+      protocol: tcp
+    read_only: true
+    restart: always
+    security_opt:
+    - no-new-privileges:true
+    user: 2002:2001
+  core-common-config-bootstrapper:
+    container_name: edgex-core-common-config-bootstrapper
+    depends_on:
+      consul:
+        condition: service_started
+    environment:
+      ALL_SERVICES_DATABASE_HOST: edgex-redis
+      ALL_SERVICES_MESSAGEBUS_HOST: edgex-redis
+      ALL_SERVICES_REGISTRY_HOST: edgex-core-consul
+      APP_SERVICES_CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
+      DEVICE_SERVICES_CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
+      EDGEX_SECURITY_SECRET_STORE: "false"
+    hostname: edgex-core-common-config-bootstrapper
+    image: edgexfoundry/core-common-config-bootstrapper-arm64:3.0.0
+    networks:
+      edgex-network: null
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    user: 2002:2001
+  core-data:
     container_name: edgex-core-data
     depends_on:
-    - consul
-    - database
-    - metadata
+      consul:
+        condition: service_started
+      core-metadata:
+        condition: service_started
+      database:
+        condition: service_started
     environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
       EDGEX_SECURITY_SECRET_STORE: "false"
-      MESSAGEQUEUE_HOST: edgex-redis
-      REGISTRY_HOST: edgex-core-consul
       SERVICE_HOST: edgex-core-data
     hostname: edgex-core-data
-    image: edgexfoundry/core-data-arm64:2.2.0
+    image: edgexfoundry/core-data-arm64:3.0.0
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:5563:5563/tcp
-    - 127.0.0.1:59880:59880/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59880
+      published: "59880"
+      protocol: tcp
+    read_only: true
+    restart: always
+    security_opt:
+    - no-new-privileges:true
+    user: 2002:2001
+  core-metadata:
+    container_name: edgex-core-metadata
+    depends_on:
+      consul:
+        condition: service_started
+      database:
+        condition: service_started
+    environment:
+      EDGEX_SECURITY_SECRET_STORE: "false"
+      SERVICE_HOST: edgex-core-metadata
+    hostname: edgex-core-metadata
+    image: edgexfoundry/core-metadata-arm64:3.0.0
+    networks:
+      edgex-network: null
+    ports:
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59881
+      published: "59881"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
@@ -132,134 +187,122 @@ services:
     user: 2002:2001
   database:
     container_name: edgex-redis
-    environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
-      EDGEX_SECURITY_SECRET_STORE: "false"
-      REGISTRY_HOST: edgex-core-consul
     hostname: edgex-redis
-    image: redis:6.2.6-alpine
+    image: redis:7.0.11-alpine
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:6379:6379/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 6379
+      published: "6379"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
     - no-new-privileges:true
     user: root:root
     volumes:
-    - db-data:/data:z
-  metadata:
-    container_name: edgex-core-metadata
-    depends_on:
-    - consul
-    - database
-    - notifications
-    environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
-      EDGEX_SECURITY_SECRET_STORE: "false"
-      NOTIFICATIONS_SENDER: edgex-core-metadata
-      REGISTRY_HOST: edgex-core-consul
-      SERVICE_HOST: edgex-core-metadata
-    hostname: edgex-core-metadata
-    image: edgexfoundry/core-metadata-arm64:2.2.0
-    networks:
-      edgex-network: {}
-    ports:
-    - 127.0.0.1:59881:59881/tcp
-    read_only: true
-    restart: always
-    security_opt:
-    - no-new-privileges:true
-    user: 2002:2001
-  notifications:
-    container_name: edgex-support-notifications
-    depends_on:
-    - consul
-    - database
-    environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
-      EDGEX_SECURITY_SECRET_STORE: "false"
-      REGISTRY_HOST: edgex-core-consul
-      SERVICE_HOST: edgex-support-notifications
-    hostname: edgex-support-notifications
-    image: edgexfoundry/support-notifications-arm64:2.2.0
-    networks:
-      edgex-network: {}
-    ports:
-    - 127.0.0.1:59860:59860/tcp
-    read_only: true
-    restart: always
-    security_opt:
-    - no-new-privileges:true
-    user: 2002:2001
-  rulesengine:
+    - type: volume
+      source: db-data
+      target: /data
+      volume: {}
+  rules-engine:
     container_name: edgex-kuiper
     depends_on:
-    - database
+      database:
+        condition: service_started
     environment:
-      CONNECTION__EDGEX__REDISMSGBUS__PORT: 6379
+      CONNECTION__EDGEX__REDISMSGBUS__PORT: "6379"
       CONNECTION__EDGEX__REDISMSGBUS__PROTOCOL: redis
       CONNECTION__EDGEX__REDISMSGBUS__SERVER: edgex-redis
       CONNECTION__EDGEX__REDISMSGBUS__TYPE: redis
-      EDGEX__DEFAULT__PORT: 6379
+      EDGEX__DEFAULT__PORT: "6379"
       EDGEX__DEFAULT__PROTOCOL: redis
       EDGEX__DEFAULT__SERVER: edgex-redis
-      EDGEX__DEFAULT__TOPIC: rules-events
+      EDGEX__DEFAULT__TOPIC: edgex/rules-events
       EDGEX__DEFAULT__TYPE: redis
       KUIPER__BASIC__CONSOLELOG: "true"
-      KUIPER__BASIC__RESTPORT: 59720
+      KUIPER__BASIC__RESTPORT: "59720"
     hostname: edgex-kuiper
-    image: lfedge/ekuiper:1.4.4-alpine
+    image: lfedge/ekuiper:1.9.2-alpine
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:59720:59720/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59720
+      published: "59720"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
     - no-new-privileges:true
     user: kuiper:kuiper
     volumes:
-    - kuiper-data:/kuiper/data:z
-  scheduler:
+    - type: volume
+      source: kuiper-data
+      target: /kuiper/data
+      volume: {}
+    - type: volume
+      source: kuiper-etc
+      target: /kuiper/etc
+      volume: {}
+    - type: volume
+      source: kuiper-log
+      target: /kuiper/log
+      volume: {}
+    - type: volume
+      source: kuiper-plugins
+      target: /kuiper/plugins
+      volume: {}
+  support-notifications:
+    container_name: edgex-support-notifications
+    depends_on:
+      consul:
+        condition: service_started
+      database:
+        condition: service_started
+    environment:
+      EDGEX_SECURITY_SECRET_STORE: "false"
+      SERVICE_HOST: edgex-support-notifications
+    hostname: edgex-support-notifications
+    image: edgexfoundry/support-notifications-arm64:3.0.0
+    networks:
+      edgex-network: null
+    ports:
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59860
+      published: "59860"
+      protocol: tcp
+    read_only: true
+    restart: always
+    security_opt:
+    - no-new-privileges:true
+    user: 2002:2001
+  support-scheduler:
     container_name: edgex-support-scheduler
     depends_on:
-    - consul
-    - database
+      consul:
+        condition: service_started
+      database:
+        condition: service_started
     environment:
-      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
-      CLIENTS_CORE_DATA_HOST: edgex-core-data
-      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
-      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
-      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
-      DATABASES_PRIMARY_HOST: edgex-redis
       EDGEX_SECURITY_SECRET_STORE: "false"
       INTERVALACTIONS_SCRUBAGED_HOST: edgex-core-data
       INTERVALACTIONS_SCRUBPUSHED_HOST: edgex-core-data
-      REGISTRY_HOST: edgex-core-consul
       SERVICE_HOST: edgex-support-scheduler
     hostname: edgex-support-scheduler
-    image: edgexfoundry/support-scheduler-arm64:2.2.0
+    image: edgexfoundry/support-scheduler-arm64:3.0.0
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 127.0.0.1:59861:59861/tcp
+    - mode: ingress
+      host_ip: 127.0.0.1
+      target: 59861
+      published: "59861"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
@@ -269,20 +312,37 @@ services:
     container_name: edgex-ui-go
     environment:
       EDGEX_SECURITY_SECRET_STORE: "false"
+      SERVICE_HOST: edgex-ui-go
     hostname: edgex-ui-go
-    image: edgexfoundry/edgex-ui-arm64:2.2.0
+    image: edgexfoundry/edgex-ui-arm64:3.0.0
     networks:
-      edgex-network: {}
+      edgex-network: null
     ports:
-    - 4000:4000/tcp
+    - mode: ingress
+      target: 4000
+      published: "4000"
+      protocol: tcp
     read_only: true
     restart: always
     security_opt:
     - no-new-privileges:true
     user: 2002:2001
-version: '3.7'
+networks:
+  edgex-network:
+    name: edgex_edgex-network
+    driver: bridge
 volumes:
-  consul-config: {}
-  consul-data: {}
-  db-data: {}
-  kuiper-data: {}
+  consul-config:
+    name: edgex_consul-config
+  consul-data:
+    name: edgex_consul-data
+  db-data:
+    name: edgex_db-data
+  kuiper-data:
+    name: edgex_kuiper-data
+  kuiper-etc:
+    name: edgex_kuiper-etc
+  kuiper-log:
+    name: edgex_kuiper-log
+  kuiper-plugins:
+    name: edgex_kuiper-plugins

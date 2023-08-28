@@ -1,8 +1,8 @@
 #!/bin/bash
 
-images=(lfedge/ekuiper edgexfoundry/app-service-configurable-arm64 redis edgexfoundry/edgex-ui-arm64 edgexfoundry/core-data-arm64 edgexfoundry/support-notifications-arm64 edgexfoundry/core-metadata-arm64 edgexfoundry/core-command-arm64 edgexfoundry/support-scheduler-arm64 consul)
+images=(lfedge/ekuiper edgexfoundry/app-service-configurable-arm64 redis edgexfoundry/edgex-ui-arm64 edgexfoundry/core-data-arm64 edgexfoundry/support-notifications-arm64 edgexfoundry/core-metadata-arm64 edgexfoundry/core-command-arm64 edgexfoundry/support-scheduler-arm64 hashicorp/consul edgexfoundry/core-common-config-bootstrapper-arm64)
 
-image_tar_gz=(edgexfoundry_ekuiper edgexfoundry_app-service-configurable-arm64 edgexfoundry_redis edgexfoundry_edgex-ui-arm64 edgexfoundry_core-data-arm64 edgexfoundry_support-notifications-arm64 edgexfoundry_core-metadata-arm64 edgexfoundry_core-command-arm64 edgexfoundry_support-scheduler-arm64 edgexfoundry_consul)
+image_tar_gz=(edgexfoundry_ekuiper edgexfoundry_app-service-configurable-arm64 edgexfoundry_redis edgexfoundry_edgex-ui-arm64 edgexfoundry_core-data-arm64 edgexfoundry_support-notifications-arm64 edgexfoundry_core-metadata-arm64 edgexfoundry_core-command-arm64 edgexfoundry_support-scheduler-arm64 edgexfoundry_consul edgexfoundry_bootstrapper)
 
 if ! docker info > /dev/null 2>&1; then
     echo "This script uses docker, and it isn't running - please start docker and try again!"
