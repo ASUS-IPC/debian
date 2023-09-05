@@ -119,6 +119,10 @@ dpkg -i --force-overwrite /packages/gstreamer1.0/*.deb
 DEBIAN_FRONTEND=noninteractive apt-get -y install -f
 DEBIAN_FRONTEND=noninteractive apt-get -y install gstreamer1.0-alsa
 
+echo "deb http://security.debian.org/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get --only-upgrade -y install ssh
+
 # Add User
 useradd -s '/bin/bash' -m -G adm,sudo asus
 echo "asus:asus" | chpasswd
